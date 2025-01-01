@@ -1,0 +1,7 @@
+torch
+transformers
+byaldi
+qwen_vl_utils
+pdf2image
+flash-attn
+chainlit
