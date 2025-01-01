@@ -2,3 +2,7 @@ new legal.pdf
 .byaldi
 .chainlit
 .lightning_studio
+.idea
+.vscode
+__pycache__
+.bash_history
