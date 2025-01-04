@@ -6,3 +6,8 @@ new legal.pdf
 .vscode
 __pycache__
 .bash_history
+.files/
+.vscode-server/
+.wget-hsts
+cause_list.pdf
+tesla.pdf
