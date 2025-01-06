@@ -1,20 +1,30 @@
 import torch
+from byaldi import RAGMultiModalModel
+# from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 from qwen_vl_utils import process_vision_info
 import chainlit as cl
 from pdf2image import convert_from_path
 from io import BytesIO
 import os
 import asyncio
-
-# Change from relative to absolute imports
 from utils import get_optimal_device_config, can_use_flash_attention
 from models import initialize_resources
+
+# Cache resource initialization
+@cl.cache
+def load_resources():
+    return initialize_resources()
+
+# Cache PDF-to-image conversion
+@cl.cache
+def convert_pdf_to_images(pdf_path):
+    return convert_from_path(pdf_path)
 
 # Chainlit App
 @cl.on_chat_start
 async def start():
     # Initialize resources using the cached function
-    device_config, rag_model, qwen2vl_model, processor = initialize_resources()
+    device_config, rag_model, qwen2vl_model, processor = load_resources()
     cl.user_session.set("device_config", device_config)
     cl.user_session.set("rag_model", rag_model)
     cl.user_session.set("qwen2vl_model", qwen2vl_model)
@@ -34,25 +44,43 @@ async def start():
         pdf_name = pdf_file.name
 
         # Show a loading message while indexing the PDF
-        await cl.Message(content=f"Indexing PDF '{pdf_name}'. This may take a moment...").send()
+        loading_message = cl.Message(content=f"Indexing PDF '{pdf_name}'. This may take a moment...")
+        await loading_message.send()
 
-        # Index the PDF asynchronously to avoid blocking the main thread
+        # Index the PDF asynchronously with proper error handling
+        try:
+            await asyncio.to_thread(
+                rag_model.index,
+                input_path=pdf_path,
+                index_name=pdf_name,
+                store_collection_with_index=False,
+                overwrite=False
+            )
+            # loading_message.content = f"PDF '{pdf_name}' indexed successfully!"
+            # await loading_message.update()
+        except ValueError as e:
+            if f"An index named {pdf_name} already exists" in str(e):
+                # await cl.Message(content="Index already exists. Loading the existing index...").send()
+                # await loading_message.update()
+                # Load the existing index
+                rag_model = RAGMultiModalModel.from_index(pdf_name)
+                # Update the session with the new model
+                cl.user_session.set("rag_model", rag_model)
+                # loading_message.content = "Existing index loaded successfully!"
+                # await loading_message.update()
+            else:
+                # Handle other ValueError cases
+                # loading_message.content = f"Error during indexing: {str(e)}"
+                # await loading_message.update()
+                # return
+                raise
 
-        await asyncio.to_thread(
-            rag_model.index,
-            input_path=pdf_path,
-            index_name=pdf_name,
-            store_collection_with_index=False,
-            overwrite=True,
-        )
-
-
-        # Convert PDF to images asynchronously
-        images = await asyncio.to_thread(convert_from_path, pdf_path)
+        # Convert PDF to images asynchronously (cached)
+        images = await asyncio.to_thread(convert_pdf_to_images, pdf_path)
         cl.user_session.set("images", images)
         cl.user_session.set("pdf_name", pdf_name)
 
-        await cl.Message(content=f"PDF '{pdf_name}' uploaded and indexed successfully! You can now ask questions about it.").send()
+        await cl.Message(content="You can now ask questions about the document.").send()
     else:
         await cl.Message(content="No file uploaded. Please restart the app to upload a PDF.").send()
 
@@ -113,7 +141,7 @@ async def main(message: cl.Message):
     generated_ids = await asyncio.to_thread(
         qwen2vl_model.generate,
         **inputs,
-        max_new_tokens=128,
+        max_new_tokens=102,
     )
 
     generated_ids_trimmed = [
@@ -126,8 +154,6 @@ async def main(message: cl.Message):
     await cl.Message(content=output_text[0]).send()
 
     # Clean up the uploaded PDF file after processing
-    pdf_name = cl.user_session.get("pdf_name")
-    if pdf_name and os.path.exists(pdf_name):
-        os.remove(pdf_name)
-
-
+    # pdf_name = cl.user_session.get("pdf_name")
+    # if pdf_name and os.path.exists(pdf_name):
+    #     os.remove(pdf_na
