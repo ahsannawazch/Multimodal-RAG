@@ -1,11 +1,10 @@
 import torch
-from byaldi import RAGMultiModalModel
-from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 from qwen_vl_utils import process_vision_info
 import chainlit as cl
 from pdf2image import convert_from_path
 from io import BytesIO
 import os
+import asyncio
 
 # Change from relative to absolute imports
 from utils import get_optimal_device_config, can_use_flash_attention
@@ -34,16 +33,22 @@ async def start():
         pdf_path = pdf_file.path
         pdf_name = pdf_file.name
 
-        # Directly index the uploaded PDF without saving it locally
-        rag_model.index(
-            input_path=pdf_path, 
-            index_name="uploaded_pdf_1", 
+        # Show a loading message while indexing the PDF
+        await cl.Message(content=f"Indexing PDF '{pdf_name}'. This may take a moment...").send()
+
+        # Index the PDF asynchronously to avoid blocking the main thread
+
+        await asyncio.to_thread(
+            rag_model.index,
+            input_path=pdf_path,
+            index_name=pdf_name,
             store_collection_with_index=False,
-            overwrite=True
+            overwrite=True,
         )
 
-        # Convert PDF to images
-        images = convert_from_path(pdf_path)
+
+        # Convert PDF to images asynchronously
+        images = await asyncio.to_thread(convert_from_path, pdf_path)
         cl.user_session.set("images", images)
         cl.user_session.set("pdf_name", pdf_name)
 
@@ -66,12 +71,12 @@ async def main(message: cl.Message):
 
     query = message.content
 
-    # Perform RAG search
-    results = rag_model.search(query, k=2)
+    # Perform RAG search asynchronously
+    results = await asyncio.to_thread(rag_model.search, query, k=2)
     pages = [result['page_num'] for result in results]
 
     # Get images for the pages
-    image_index = [result['page_num'] - 1 for result in results]  # Fixed: use result['page_num'] instead of undefined 'page'
+    image_index = [result['page_num'] - 1 for result in results]
 
     # Display the relevant pages
     for idx in image_index:
@@ -91,7 +96,7 @@ async def main(message: cl.Message):
         }
     ]
 
-    # Prepare inputs for inference
+    # Prepare inputs for inference asynchronously
     text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     image_inputs, video_inputs = process_vision_info(messages)
 
@@ -104,8 +109,12 @@ async def main(message: cl.Message):
     )
     inputs = {k: v.to(device_config["vl_device"]) for k, v in inputs.items()}
 
-    # Perform inference
-    generated_ids = qwen2vl_model.generate(**inputs, max_new_tokens=128)
+    # Perform inference asynchronously
+    generated_ids = await asyncio.to_thread(
+        qwen2vl_model.generate,
+        **inputs,
+        max_new_tokens=128,
+    )
 
     generated_ids_trimmed = [
         out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs['input_ids'], generated_ids)
@@ -120,3 +129,5 @@ async def main(message: cl.Message):
     pdf_name = cl.user_session.get("pdf_name")
     if pdf_name and os.path.exists(pdf_name):
         os.remove(pdf_name)
+
+
