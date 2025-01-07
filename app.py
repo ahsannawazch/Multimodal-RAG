@@ -1,6 +1,5 @@
 import torch
 from byaldi import RAGMultiModalModel
-# from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 from qwen_vl_utils import process_vision_info
 import chainlit as cl
 from pdf2image import convert_from_path
@@ -56,24 +55,23 @@ async def start():
                 store_collection_with_index=False,
                 overwrite=False
             )
-            # loading_message.content = f"PDF '{pdf_name}' indexed successfully!"
-            # await loading_message.update()
+            loading_message.content = f"PDF '{pdf_name}' indexed successfully!"
+            await loading_message.update()
         except ValueError as e:
             if f"An index named {pdf_name} already exists" in str(e):
-                # await cl.Message(content="Index already exists. Loading the existing index...").send()
-                # await loading_message.update()
+                # Instead of updating the loading message, send a new one
+                await cl.Message(content="Index already exists. Loading the existing index...").send()
+
                 # Load the existing index
                 rag_model = RAGMultiModalModel.from_index(pdf_name)
-                # Update the session with the new model
                 cl.user_session.set("rag_model", rag_model)
-                # loading_message.content = "Existing index loaded successfully!"
-                # await loading_message.update()
+
+                # Confirm the existing index was loaded
+                await cl.Message(content="Existing index loaded successfully!").send()
             else:
-                # Handle other ValueError cases
-                # loading_message.content = f"Error during indexing: {str(e)}"
-                # await loading_message.update()
-                # return
-                raise
+                # Handle other errors
+                await cl.Message(content=f"Error during indexing: {str(e)}").send()
+                return
 
         # Convert PDF to images asynchronously (cached)
         images = await asyncio.to_thread(convert_pdf_to_images, pdf_path)
@@ -106,12 +104,18 @@ async def main(message: cl.Message):
     # Get images for the pages
     image_index = [result['page_num'] - 1 for result in results]
 
-    # Display the relevant pages
+    # Prepare image elements
+    image_elements = []
     for idx in image_index:
         img_byte_arr = BytesIO()
         images[idx].save(img_byte_arr, format="PNG")
         img_byte_arr = img_byte_arr.getvalue()
-        await cl.Image(name=f"Page {pages[image_index.index(idx)]}", display="inline", content=img_byte_arr).send(for_id=message.id)
+        image_element = cl.Image(
+            name=f"Page {pages[image_index.index(idx)]}",
+            content=img_byte_arr,
+            display="inline"
+        )
+        image_elements.append(image_element)
 
     # Construct the messages list dynamically
     messages = [
@@ -150,10 +154,9 @@ async def main(message: cl.Message):
 
     output_text = processor.batch_decode(generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False)
 
-    # Send the response back to the user
-    await cl.Message(content=output_text[0]).send()
+    # Send the response back to the user with images
+    await cl.Message(
+        content=output_text[0],
+        elements=image_elements
+    ).send()
 
-    # Clean up the uploaded PDF file after processing
-    # pdf_name = cl.user_session.get("pdf_name")
-    # if pdf_name and os.path.exists(pdf_name):
-    #     os.remove(pdf_na
