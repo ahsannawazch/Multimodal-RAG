@@ -1,61 +1,92 @@
-# 📚 Multimodal RAG App
+# PDF Visual Question Answering App
 
-## Overview
-
-This app leverages the power of Multimodal Retrieval-Augmented Generation (RAG) to help you find and understand information from PDFs and documents that contain images, charts, tables, and graphs. Using the ColQwen retriever from the Byaldi library, this app can efficiently index and search through your documents.
+An interactive application that allows users to ask questions about PDF documents using advanced multimodal AI models.
 
 ## Features
 
-- 📄 **PDF Upload**: Upload your PDF documents directly to the app.
-- 🔍 **Efficient Search**: Perform searches within the document using advanced RAG models.
-- 🖼️ **Image Handling**: Extract and display images, charts, tables, and graphs from your documents.
-- 🤖 **AI-Powered**: Utilize state-of-the-art models for conditional generation and retrieval.
+- 🚀 Multi-GPU Support
+  - Automatically detects and utilizes multiple GPUs
+  - Optimally distributes RAG and VL models across available GPUs
+  - Falls back to single GPU or CPU when necessary
 
-## Requirements
+- ⚡ Hardware Acceleration
+  - Automatic Flash Attention 2.0 support detection
+  - Enables Flash Attention on compatible GPUs (Compute Capability ≥ 8.0)
+  - Falls back to SDPA for older GPUs
 
-Before you begin, ensure you have the following installed:
+- 📑 PDF Processing
+  - Interactive PDF document upload
+  - Automatic PDF indexing and caching
+  - Visual and textual context understanding
+  - Smart page selection based on query relevance
 
-- Python 3.10 or higher
-- Poppler (used for PDF processing)
+## System Requirements
 
-### Installing Poppler
+- Python 3.8 or higher
+- Poppler (required for PDF processing)
+- For GPU acceleration:
+  - CUDA-compatible GPU
+  - For Flash Attention: NVIDIA GPU with Compute Capability ≥ 8.0
+  - Minimum 8GB GPU RAM recommended
+- RAM: 16GB minimum recommended
 
-#### For Linux (Ubuntu)
+## Installation
+
+### 1. Install Poppler
+
+#### For Ubuntu/Debian:
 ```bash
+sudo apt-get update
 sudo apt-get install -y poppler-utils
 ```
 
-#### For macOS
+#### For macOS:
 ```bash
 brew install poppler
 ```
 
-## Installation
+#### For Windows:
+Download the latest binary from [poppler releases](http://blog.alivate.com.au/poppler-windows/), extract it, and add the `bin` directory to your PATH.
 
-1. **Clone the repository**:
-```bash
-git clone https://github.com/yourusername/your-repo-name.git
-cd your-repo-name
-```
+### 2. Set Up Python Environment
 
-2. **Install the required Python packages**:
 ```bash
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# On Windows:
+.\venv\Scripts\activate
+# On Unix or MacOS:
+source venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-## Usage
+### 3. Run the Application
 
-1. **Run the app**:
 ```bash
 chainlit run app.py
 ```
 
-2. **Upload a PDF**: When prompted, upload your PDF file to begin indexing and searching.
+The app will be available at http://localhost:8000
 
-3. **Ask Questions**: Once the PDF is uploaded and indexed, you can ask questions about the content, and the app will retrieve and display relevant information, including images and text.
+## Models Used
+
+- RAG: Vidore/colqwen2-v1.0
+- VL: Qwen/Qwen2-VL-2B-Instruct
+
+## Usage
+
+1. Access the web interface at http://localhost:8000
+2. Upload your PDF document
+3. Wait for indexing to complete
+4. Start asking questions about the document
+5. View responses with relevant page extracts
 
 ## Future Enhancements
 
 - 📸 **Screenshots**: We will add screenshots of the app in action soon!
 
-Enjoy using the Multimodal RAG App! 🚀
+Enjoy using the PDF Visual Question Answering App! 🚀
