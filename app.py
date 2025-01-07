@@ -15,7 +15,7 @@ def load_resources():
     return initialize_resources()
 
 # Cache PDF-to-image conversion
-@cl.cache
+# @cl.cache
 def convert_pdf_to_images(pdf_path):
     return convert_from_path(pdf_path)
 
@@ -108,12 +108,15 @@ async def main(message: cl.Message):
     image_elements = []
     for idx in image_index:
         img_byte_arr = BytesIO()
-        images[idx].save(img_byte_arr, format="PNG")
+        images[idx].save(img_byte_arr, format="JPEG")
         img_byte_arr = img_byte_arr.getvalue()
         image_element = cl.Image(
             name=f"Page {pages[image_index.index(idx)]}",
             content=img_byte_arr,
-            display="inline"
+            display="inline",
+            mime="image/jpeg",
+            size="medium",
+            url=None
         )
         image_elements.append(image_element)
 
@@ -157,6 +160,6 @@ async def main(message: cl.Message):
     # Send the response back to the user with images
     await cl.Message(
         content=output_text[0],
-        elements=image_elements
+        elements=image_elements,
     ).send()
 
