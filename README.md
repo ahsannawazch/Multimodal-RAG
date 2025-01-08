@@ -8,10 +8,10 @@ To streamline interactions with ColQwen2, we utilize the Byaldi library designed
 
 📑 **PDF Processing**
 
-- Interactive PDF document upload.
+- Interactive PDF document upload in chainlit app.
 - Automatic PDF indexing and caching.
 - Visual and textual context understanding.
-- Smart page selection based on query relevance.
+- Display the relevant pages along with the answer.
 
 🚀 **Multi-GPU Support**
 
@@ -68,7 +68,7 @@ For Windows 🖥️
     chainlit run app.py
     ```
 
-2. Upload a PDF: When prompted, upload your PDF file to begin indexing it on disk.
+2. Upload a PDF: When prompted, upload your PDF file to begin indexing it on the disk.
 
 3. Ask Questions: Once the PDF is uploaded and indexed, you can ask questions about the content, and the app will retrieve and display relevant information, including images and text.
 
