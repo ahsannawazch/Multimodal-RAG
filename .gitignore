@@ -11,3 +11,4 @@ __pycache__
 .wget-hsts
 cause_list.pdf
 tesla.pdf
+.cursor-server/
