@@ -45,7 +45,7 @@ brew install poppler
 
 For Windows 🖥️
 
-1. Download Poppler for Windows from this [source](http://blog.alivate.com.au/poppler-windows/).
+1. Download Poppler for Windows from this [source](https://poppler.freedesktop.org/).
 2. Extract the archive and add the bin folder to your system's PATH variable.
 
 🛠️ **Installation**
