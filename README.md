@@ -1,11 +1,10 @@
 🚀 Multimodal RAG App 🚀
-
 Introducing the Multimodal RAG App—your ultimate solution for extracting and understanding information from complex PDF documents containing images, charts, tables, and graphs! 📄🔍
 
-This application leverages ColQwen2-v1.0, a cutting-edge multimodal vector representation retriever that processes entire document pages as images. By generating multi-vector embeddings, it captures both textual and visual cues, preserving each page's structure and context. 🖼️📊 111
+This application leverages ColQwen2-v1.0, a state-of-the-art visual retriever based on Qwen2-VL-2B-Instruct with ColBERT strategy. ColQwen2 processes entire document pages as images, generating ColBERT-style multi-vector representations that capture both textual and visual cues, preserving each page's structure and context.
 
-To streamline interactions with ColQwen2, we use the Byaldi library. Byaldi serves as a user-friendly interface, simplifying the implementation of late-interaction multimodal models like ColPALI, thereby enhancing the efficiency of document retrieval tasks. 🛠️ 2
-✨ Features
+To streamline interactions with ColQwen2, we utilize the Byaldi library designed to facilitate the use of late-interaction multi-modal models like ColPQwen with a familiar API, thereby enhancing the efficiency of document retrieval tasks.
+ 🛠️ 2 ✨ Features
 
     📄 PDF Upload: Upload your PDF documents directly to the app.
 
