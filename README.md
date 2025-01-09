@@ -21,8 +21,10 @@ To streamline interactions with ColQwen2, we utilize the Byaldi library designed
 
 ⚡ **Hardware Acceleration**
 
-- Automatic Flash Attention 2.0 support detection for compatible GPUs (Compute Capability ≥ 8.0).
-- Falls back to SDPA for older GPUs.
+- Automatic Flash Attention support detection for compatible GPUs:
+  - **Flash Attention 2.0** for GPUs with Compute Capability ≥ 8.0 (e.g., A100, L4).
+  - **Flash Attention 1.0** for GPUs with Compute Capability ≥ 7.0 (e.g., T4).
+- Falls back to SDPA for older GPUs or CPUs.
 
 📋 **Requirements**
 

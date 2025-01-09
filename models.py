@@ -1,4 +1,3 @@
-
 from byaldi import RAGMultiModalModel
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 from utils import get_optimal_device_config, can_use_flash_attention
@@ -14,10 +13,11 @@ def initialize_resources():
     )
 
     # Load Qwen2VL model with Flash Attention check
+    attn_implementation = "flash_attention_2" if can_use_flash_attention() else "sdpa"
     qwen2vl_model = Qwen2VLForConditionalGeneration.from_pretrained(
         "Qwen/Qwen2-VL-2B-Instruct",
         torch_dtype=torch.float16,
-        attn_implementation="flash_attention_2" if can_use_flash_attention() else "sdpa",
+        attn_implementation=attn_implementation,
         device_map=device_config["vl_device"]
     ).eval()
 
