@@ -1,6 +1,6 @@
 from byaldi import RAGMultiModalModel
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
-from utils import get_optimal_device_config, can_use_flash_attention
+from utils import get_optimal_device_config, get_flash_attention_version
 import torch
 
 # Function to initialize all resources
@@ -12,8 +12,12 @@ def initialize_resources():
         "vidore/colqwen2-v1.0", device=torch.device(device_config["rag_device"])
     )
 
-    # Load Qwen2VL model with Flash Attention check
-    attn_implementation = "flash_attention_2" if can_use_flash_attention() else "sdpa"
+    # Check if Flash Attention 2 is available and supported
+    attn_implementation = get_flash_attention_version() or "sdpa"
+    print(f"Using attention implementation: {attn_implementation}")
+
+
+    # Load Qwen2VL model with correct attention implementation
     qwen2vl_model = Qwen2VLForConditionalGeneration.from_pretrained(
         "Qwen/Qwen2-VL-2B-Instruct",
         torch_dtype=torch.float16,

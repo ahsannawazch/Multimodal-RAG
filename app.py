@@ -1,16 +1,12 @@
-import torch
 from byaldi import RAGMultiModalModel
 from qwen_vl_utils import process_vision_info
 import chainlit as cl
 from pdf2image import convert_from_path
 from io import BytesIO
-import os
 import asyncio
-from utils import get_optimal_device_config, can_use_flash_attention
 from models import initialize_resources
 
-# Cache resource initialization
-@cl.cache
+# Remove the cache decorator
 def load_resources():
     return initialize_resources()
 
