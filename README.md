@@ -17,14 +17,13 @@ To streamline interactions with ColQwen2, we utilize the Byaldi library designed
 
 - Automatically detects and utilizes multiple GPUs for optimal performance.
 - Optimally distributes Visual Retriever (ColQwen2) and VL models across available GPUs.
-- Falls back to single GPU or CPU when necessary.
+- Falls back to single GPU when necessary.
 
 ⚡ **Hardware Acceleration**
 
 - Automatic Flash Attention support detection for compatible GPUs:
-  - **Flash Attention 2.0** for GPUs with Compute Capability ≥ 8.0 (e.g., A100, L4).
-  - **Flash Attention 1.0** for GPUs with Compute Capability ≥ 7.0 (e.g., T4).
-- Falls back to SDPA for older GPUs or CPUs.
+  - **Flash Attention 2.0** for GPUs with Compute Capability ≥ 8.0 (e.g., A100, H100, L4, A10G, A6000).
+  - Falls back to SDPA for older GPUs.
 
 📋 **Requirements**
 
@@ -32,6 +31,7 @@ Before you begin, ensure you have the following installed:
 
 - Python 3.10 or higher 🐍
 - Poppler (used for PDF processing) 📄
+- A GPU with at least 16 GB of memory (VRAM) 💾
 
 📥 **Installing Poppler**
 
@@ -63,6 +63,20 @@ For Windows 🖥️
     pip install -r requirements.txt
     ```
 
+🚀 **Optional: Faster Model Downloads**
+
+If you have high bandwidth and want to download models quickly from Hugging Face, you can enable accelerated downloads:
+
+1. Set the environment variable:
+    ```bash
+    export HF_HUB_ENABLE_HF_TRANSFER=1
+    ```
+
+2. Install the `hf_transfer` package:
+    ```bash
+    pip install hf_transfer
+    ```
+
 🚀 **Usage**
 
 1. Run the app:
@@ -75,3 +89,7 @@ For Windows 🖥️
 3. Ask Questions: Once the PDF is uploaded and indexed, you can ask questions about the content, and the app will retrieve and display relevant information, including images and text.
 
 Enjoy exploring your documents with the Multimodal RAG App! 🎉📚
+
+⚡ **Flash Attention Support**
+
+The app automatically detects and installs Flash Attention 2.0 for compatible GPUs (e.g., A100, H100, L4, A10G, A6000). If your GPU is not compatible, the app will fall back to using SDPA. This ensures optimal performance based on your hardware capabilities.
