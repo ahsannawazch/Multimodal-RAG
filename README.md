@@ -89,7 +89,3 @@ If you have high bandwidth and want to download models quickly from Hugging Face
 3. Ask Questions: Once the PDF is uploaded and indexed, you can ask questions about the content, and the app will retrieve and display relevant information, including images and text.
 
 Enjoy exploring your documents with the Multimodal RAG App! 🎉📚
-
-⚡ **Flash Attention Support**
-
-The app automatically detects and installs Flash Attention 2.0 for compatible GPUs (e.g., A100, H100, L4, A10G, A6000). If your GPU is not compatible, the app will fall back to using SDPA. This ensures optimal performance based on your hardware capabilities.
