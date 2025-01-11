@@ -4,7 +4,7 @@ Introducing the Multimodal RAG App—your ultimate solution for extracting and u
 
 This application leverages ColQwen2-v1.0, a state-of-the-art visual retriever based on Qwen2-VL-2B-Instruct with ColBERT strategy. ColQwen2 processes entire document pages as images, generating ColBERT-style multi-vector representations that capture both textual and visual cues, preserving each page's structure and context.
 
-To streamline interactions with ColQwen2, we utilize the Byaldi library designed to facilitate the use of late-interaction multi-modal models like ColPQwen with a familiar API, thereby enhancing the efficiency of document retrieval tasks.
+To streamline interactions with ColQwen2, we utilize the Byaldi library designed to facilitate the use of late-interaction multi-modal models like ColQwen with a familiar API, thereby enhancing the efficiency of document retrieval tasks.
 
 📑 **PDF Processing**
 
