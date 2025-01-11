@@ -144,7 +144,7 @@ async def main(message: cl.Message):
     generated_ids = await asyncio.to_thread(
         qwen2vl_model.generate,
         **inputs,
-        max_new_tokens=102,
+        max_new_tokens=1024,
     )
 
     generated_ids_trimmed = [
